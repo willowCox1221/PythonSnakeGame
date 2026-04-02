@@ -27,7 +27,7 @@ def show_score(score):
     screen.blit(value, [10, 10])
 
 def show_time(elapsed_time):
-    value = fot.render("Time: " + str(int(elapsed_time)), True, white)
+    value = font.render("Time: " + str(int(elapsed_time)), True, white)
     screen.blit(value, [width - 120, 10]) #This line puts it in the top right of the screen
 def draw_snake(block, snake_list):
     for x in snake_list:
