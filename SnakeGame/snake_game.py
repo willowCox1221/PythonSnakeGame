@@ -59,7 +59,7 @@ def gameLoop():
         while game_close == True:
             screen.fill(black)
             elapsed_time = (pygame.time.get_ticks() - start_time) / 1000
-            message("You Lost! Score: " + str(score) + " Time: " + str(int(elapsed_time)) + "  Q-Quit C-Play Again", red)
+            message(f"You Lost! Score: {score} Time: {int(elapsed_time)}  Q-Quit C-Play Again", red)
             
             show_time(elapsed_time)
             pygame.display.update()
