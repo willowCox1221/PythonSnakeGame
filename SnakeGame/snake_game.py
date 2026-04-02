@@ -61,11 +61,14 @@ def gameLoop():
     while not game_over:
         while game_close == True:
             screen.fill(black)
-            time_left = max(0, time_limit - (pygame.time.get_ticks() - start_time)) / 1000
-            
+            elapsed_time = (pygame.time.get_ticks() - start_time) / 1000
+            time_left = max(0, time_limit - (pygame.time.get_ticks() - start_time) / 1000)
+            time_left = time_limit - elapsed_time
+            if time_left <= 0:
+                game_close = True
             message(f"You Lost! Score: {score} Time: {int(time_left)}  Q-Quit C-Play Again", red)
             show_time(time_left)
-            
+
             pygame.display.update()
 
             for event in pygame.event.get():
@@ -116,6 +119,11 @@ def gameLoop():
 
         draw_snake(snake_block, snake_List)
         show_score(score)
+
+        elapsed_time = (pygame.time.get_ticks() - start_time) / 1000
+        time_left = time_limit - elapsed_time
+        show_time(time_left)
+
         pygame.display.update()
 
         if x1 == foodx and y1 == foody:
@@ -123,6 +131,7 @@ def gameLoop():
             foody = round(random.randrange(0, height - snake_block) / 10.0) * 10.0
             length_of_snake += 1
             score += 1
+            start_time -= 3000 # 3000 ms is 3 seconds
 
         clock.tick(snake_speed)
         
