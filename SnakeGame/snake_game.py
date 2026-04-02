@@ -39,6 +39,14 @@ def message(msg, color):
     mesg = font.render(msg, True, color)
     screen.blit(mesg, [width/6, height/3])
 
+def draw_time_boosts(boosts):
+    for boost in boosts:
+        x, y, alpha = boost
+
+        text = font.render("+3s", True, (0, 255, 100))
+        text.set_alpha(alpha)
+        screen.blit(text, (x, y))
+
 def gameLoop():
     game_over = False
     game_close = False
@@ -58,16 +66,17 @@ def gameLoop():
     foodx = round(random.randrange(0, width - snake_block) / 10.0) * 10.0
     foody = round(random.randrange(0, height - snake_block) / 10.0) * 10.0
 
+    time_boost= []
+
     while not game_over:
         while game_close == True:
             screen.fill(black)
             elapsed_time = (pygame.time.get_ticks() - start_time) / 1000
-            time_left = max(0, time_limit - (pygame.time.get_ticks() - start_time) / 1000)
-            time_left = time_limit - elapsed_time
-            if time_left <= 0:
-                game_close = True
+            time_left = max(0, time_limit - elapsed_time)
+            
             message(f"You Lost! Score: {score} Time: {int(time_left)}  Q-Quit C-Play Again", red)
             show_time(time_left)
+
 
             pygame.display.update()
 
@@ -120,9 +129,23 @@ def gameLoop():
         draw_snake(snake_block, snake_List)
         show_score(score)
 
+        #Updates the boosts
+        for boost in time_boost:
+            boost[1] -= 1 #move up
+            boost[2] -= 5 #fade out
+        # Remove faded boosts
+        time_boost = [b for b in time_boost if b[2] > 0]
+        #Draw boosts
+        draw_time_boosts(time_boost)
+
+
         elapsed_time = (pygame.time.get_ticks() - start_time) / 1000
         time_left = time_limit - elapsed_time
-        show_time(time_left)
+
+        if time_left <= 0:
+            game_close = True
+
+        show_time(max(0, time_left))
 
         pygame.display.update()
 
@@ -133,6 +156,7 @@ def gameLoop():
             score += 1
             start_time -= 3000 # 3000 ms is 3 seconds
 
+            time_boost.append([x1 - 10, y1 - 10, 255]) # Thank you ChatGPT... x, y, opacity
         clock.tick(snake_speed)
         
     pygame.quit()
