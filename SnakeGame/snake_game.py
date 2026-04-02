@@ -67,6 +67,11 @@ def gameLoop():
     foody = round(random.randrange(0, height - snake_block) / 10.0) * 10.0
 
     time_boost= []
+    boostx = None
+    boosty = None
+    boost_spawn_time = 0
+    boost_duration = 5000
+    boost_active = False
 
     while not game_over:
         while game_close == True:
@@ -111,7 +116,23 @@ def gameLoop():
         y1 += y1_change
         screen.fill(black)
 
+        current_time = pygame.time.get_ticks()
+
+        #Spawns a boost about every 7 seconds if none exist
+        if not boost_active and current_time - boost_spawn_time > 7000:
+            boostx = round(random.randrange(0, width - snake_block) / 10.0)
+            boosty = round(random.randrange(0, height - snake_block) / 10.0)
+            boost_spawn_time = current_time
+            boost_active = True
+
         pygame.draw.rect(screen, red, [foodx, foody, snake_block, snake_block])
+
+        if boost_active:
+            pygame.draw.rect(screen, (0, 255, 255), [boostx, boosty, snake_block, snake_block])
+            pygame.draw.rect(screen, white, [boostx, boosty, snake_block, snake_block], 1)
+            if boost_active and current_time - boost_spawn_time > boost_duration:
+                boost_active = False
+
 
         snake_Head = []
         snake_Head.append(x1)
@@ -131,8 +152,8 @@ def gameLoop():
 
         #Updates the boosts
         for boost in time_boost:
-            boost[1] -= 1 #move up
-            boost[2] -= 5 #fade out
+            boost[1] -= 2 #move up
+            boost[2] -= 8 #fade out
         # Remove faded boosts
         time_boost = [b for b in time_boost if b[2] > 0]
         #Draw boosts
@@ -149,7 +170,13 @@ def gameLoop():
 
         pygame.display.update()
 
-        if x1 == foodx and y1 == foody:
+        if boost_active and int(x1) == int(boostx) and int(y1) == int(boosty):
+            start_time -= 3000
+            boost_active = False
+            time_boost.append([x1 - 10, y1 - 10, 255])
+
+
+        if int(x1) == int(foodx) and int(y1) == int(foody):
             foodx = round(random.randrange(0, width - snake_block) / 10.0) * 10.0
             foody = round(random.randrange(0, height - snake_block) / 10.0) * 10.0
             length_of_snake += 1
