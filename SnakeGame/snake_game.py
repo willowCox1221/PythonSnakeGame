@@ -120,8 +120,8 @@ def gameLoop():
 
         #Spawns a boost about every 7 seconds if none exist
         if not boost_active and current_time - boost_spawn_time > 7000:
-            boostx = round(random.randrange(0, width - snake_block) / 10.0)
-            boosty = round(random.randrange(0, height - snake_block) / 10.0)
+            boostx = round(random.randrange(0, width - snake_block) / 10.0) * 10.0
+            boosty = round(random.randrange(0, height - snake_block) / 10.0) * 10.0
             boost_spawn_time = current_time
             boost_active = True
 
