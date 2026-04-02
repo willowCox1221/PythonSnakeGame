@@ -72,6 +72,7 @@ def gameLoop():
     boost_spawn_time = 0
     boost_duration = 5000
     boost_active = False
+    blink_start = 2000
 
     while not game_over:
         while game_close == True:
@@ -128,10 +129,18 @@ def gameLoop():
         pygame.draw.rect(screen, red, [foodx, foody, snake_block, snake_block])
 
         if boost_active:
-            pygame.draw.rect(screen, (0, 255, 255), [boostx, boosty, snake_block, snake_block])
-            pygame.draw.rect(screen, white, [boostx, boosty, snake_block, snake_block], 1)
-            if boost_active and current_time - boost_spawn_time > boost_duration:
-                boost_active = False
+            time_alive = current_time - boost_spawn_time
+            time_left_boost = boost_duration - time_alive
+
+            draw_boost = True
+
+            if time_left_boost < blink_start:
+                if(current_time // 100) % 2 == 0:
+                    draw_boost = False
+
+            if draw_boost:
+                pygame.draw.rect(screen, (0, 255, 255), [boostx, boosty, snake_block, snake_block])
+                pygame.draw.rect(screen, white, [boostx, boosty, snake_block, snake_block], 1)
 
 
         snake_Head = []
