@@ -26,6 +26,9 @@ def show_score(score):
     value = font.render("Score: " + str(score), True, white)
     screen.blit(value, [10, 10])
 
+def show_time(elapsed_time):
+    value = fot.render("Time: " + str(int(elapsed_time)), True, white)
+    screen.blit(value, [width - 120, 10]) #This line puts it in the top right of the screen
 def draw_snake(block, snake_list):
     for x in snake_list:
         pygame.draw.rect(screen, green, [x[0], x [1], block, block])
@@ -47,6 +50,7 @@ def gameLoop():
     snake_List = []
     length_of_snake = 1
     score = 0
+    start_time = pygame.time.get_ticks()
 
     foodx = round(random.randrange(0, width - snake_block) / 10.0) * 10.0
     foody = round(random.randrange(0, height - snake_block) / 10.0) * 10.0
@@ -54,7 +58,9 @@ def gameLoop():
     while not game_over:
         while game_close == True:
             screen.fill(black)
-            message("You Lost! Score: " + str(score) + "  Q-Quit C-Play Again", red)
+            message("You Lost! Score: " + str(score) + " Time: " + str(int(elapsed_time)) + "  Q-Quit C-Play Again", red)
+            elapsed_time = (pygame.time.get_ticks() - start_time) / 1000
+            show_time(elapsed_time)
             pygame.display.update()
 
             for event in pygame.event.get():
