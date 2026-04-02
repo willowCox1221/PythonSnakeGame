@@ -3,16 +3,19 @@ import random
 import sys
 
 pygame.init()
-print("Program started")
 
 width = 600
 height = 400
 
+grass_img = pygame.image.load("SnakeGame/images/grass.jpg")
+grass_img = pygame.transform.scale(grass_img, (width, height))
+print("Program started")
+
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Snake Game")
 
-black = (0,0,0)
-green = (0,255,0)
+
+blue = (0, 0, 255)
 red = (255,0,0)
 white = (255,255,255)
 
@@ -24,16 +27,46 @@ font = pygame.font.SysFont(None, 35)
 
 def show_score(score):
     value = font.render("Score: " + str(score), True, white)
-    screen.blit(value, [10, 10])
+
+    # Get text size
+    text_rect = value.get_rect()
+    text_rect.topleft = (10, 10)
+
+    # Draw black box behind text
+    padding = 5
+    pygame.draw.rect(
+        screen,
+        (0, 0, 0),
+        (text_rect.x - padding,
+        text_rect.y - padding,
+        text_rect.width + padding * 2,
+        text_rect.height + padding * 2)
+    )
+    # Draw text
+    screen.blit(value, text_rect)
 
 def show_time(time_left):
     display_time = max(0, int(time_left))
     value = font.render("Time: " + str(display_time), True, white)
-    screen.blit(value, [width - 140, 10]) #This line puts it in the top right of the screen
+    text_rect = value.get_rect()
+    text_rect.topright = (width - 10, 10)
+
+    # Draw black box behind text
+    padding = 5
+    pygame.draw.rect(
+        screen,
+        (0, 0, 0),
+        (text_rect.x - padding,
+        text_rect.y - padding,
+        text_rect.width + padding * 2,
+        text_rect.height + padding * 2)
+    )
+    # Draw text   
+    screen.blit(value, text_rect) #This line puts it in the top right of the screen
 
 def draw_snake(block, snake_list):
     for x in snake_list:
-        pygame.draw.rect(screen, green, [x[0], x [1], block, block])
+        pygame.draw.rect(screen, blue, [x[0], x [1], block, block])
 
 def message(msg, color):
     mesg = font.render(msg, True, color)
@@ -76,7 +109,7 @@ def gameLoop():
 
     while not game_over:
         while game_close == True:
-            screen.fill(black)
+            screen.blit(grass_img, (0, 0))
             elapsed_time = (pygame.time.get_ticks() - start_time) / 1000
             time_left = max(0, time_limit - elapsed_time)
             
@@ -115,7 +148,7 @@ def gameLoop():
 
         x1 += x1_change
         y1 += y1_change
-        screen.fill(black)
+        screen.blit(grass_img, (0, 0))
 
         current_time = pygame.time.get_ticks()
 
