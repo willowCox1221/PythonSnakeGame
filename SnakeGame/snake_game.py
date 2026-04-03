@@ -80,6 +80,22 @@ def draw_time_boosts(boosts):
         text.set_alpha(alpha)
         screen.blit(text, (x, y))
 
+def draw_particles(particles):
+    for p in particles:
+            x, y, vx, vy, size, alpha = p
+
+            #Move
+            p[0] += vx
+            p[1] += vy
+
+            # Fade out
+            p[5] -= 10
+
+            #Draw
+            surface = pygame.Surface((size, size), pygame.SRCALPHA)
+            pygame.draw.circle(surface, (0, 255, 100, alpha), (size//2, size//2), size//2)
+            screen.blit(surface, (int(p[0]), int(p[1])))
+
 def gameLoop():
     game_over = False
     game_close = False
@@ -107,6 +123,8 @@ def gameLoop():
     boost_active = False
     blink_start = 2000
 
+    particles= []
+    
     while not game_over:
         while game_close == True:
             screen.blit(grass_img, (0, 0))
@@ -210,15 +228,37 @@ def gameLoop():
 
         show_time(max(0, time_left))
 
+        draw_particles(particles)
+
+        particles = [p for p in particles if p[5] > 0]
+
         pygame.display.update()
 
+        
         if boost_active and int(x1) == int(boostx) and int(y1) == int(boosty):
+            for _ in range(20):
+                particles.append([
+                    x1, y1,
+                    random.uniform(-3, 3),
+                    random.uniform(-3, 3),
+                    random.randint(5, 8),
+                    255
+                ])
+            
             start_time -= 3000
             boost_active = False
             time_boost.append([x1 - 10, y1 - 10, 255])
 
 
         if int(x1) == int(foodx) and int(y1) == int(foody):
+            for _ in range(15):
+                particles.append([
+                    x1, y1, # position
+                    random.uniform(-2, 2), # x velocity
+                    random.uniform(-2, 2), # y velocity
+                    random.randint(4, 7), # size
+                    255 # fade
+                ])
             foodx = round(random.randrange(0, width - snake_block) / 10.0) * 10.0
             foody = round(random.randrange(0, height - snake_block) / 10.0) * 10.0
             length_of_snake += 1
