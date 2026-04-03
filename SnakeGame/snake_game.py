@@ -16,9 +16,6 @@ print("Program started")
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Snake Game")
 
-
-
-
 blue = (0, 0, 255)
 red = (255,0,0)
 white = (255,255,255)
@@ -48,6 +45,7 @@ def show_score(score):
     )
     # Draw text
     screen.blit(value, text_rect)
+    
 
 def show_time(time_left):
     display_time = max(0, int(time_left))
@@ -67,6 +65,24 @@ def show_time(time_left):
     )
     # Draw text   
     screen.blit(value, text_rect) #This line puts it in the top right of the screen
+
+
+def show_high_score(high_score):
+    value = font.render("High Score: " + str(high_score), True, white)
+    text_rect = value.get_rect()
+    text_rect.midtop = (width / 2, 10)
+
+    padding = 5
+    pygame.draw.rect(
+        screen,
+        (0, 0, 0),
+        (text_rect.x - padding,
+        text_rect.y - padding,
+        text_rect.width + padding * 2,
+        text_rect.height + padding * 2)
+        )
+
+    screen.blit(value, text_rect)
 
 def draw_snake(block, snake_list):
     for x in snake_list:
@@ -109,7 +125,17 @@ def draw_particles(particles):
             screen.blit(surface, (int(p[0]), int(p[1])))
             
 
+def load_high_score():
+    try:
+        with open("SnakeGame/highscore.txt", "r") as file:
+            return int(file.read())
+    except:
+        return 0 # This is if the file doesn't exist yet
     
+def save_high_score(score):
+    with open("SnakeGame/highscore.txt", "w") as file:
+        file.write(str(score))
+        
 
 def gameLoop():
     game_over = False
@@ -139,6 +165,9 @@ def gameLoop():
     blink_start = 2000
 
     particles= []
+
+    high_score = load_high_score()
+
     
     while not game_over:
         while game_close == True:
@@ -224,6 +253,7 @@ def gameLoop():
 
         draw_snake(snake_block, snake_List)
         show_score(score)
+        show_high_score(high_score)
 
         #Updates the boosts
         for boost in time_boost:
@@ -285,8 +315,17 @@ def gameLoop():
             start_time -= 3000 # 3000 ms is 3 seconds
 
             time_boost.append([x1 - 10, y1 - 10, 255]) # Thank you ChatGPT... x, y, opacity
+
+            if score > high_score:
+                high_score = score
+                save_high_score(high_score)
+
+
+
+
         clock.tick(snake_speed)
-        
+
     pygame.quit()
     sys.exit()
 gameLoop()
+
