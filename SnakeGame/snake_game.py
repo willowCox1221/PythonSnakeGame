@@ -1,6 +1,8 @@
 import pygame
 import random
 import sys
+import math
+
 
 pygame.init()
 
@@ -13,6 +15,8 @@ print("Program started")
 
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Snake Game")
+
+
 
 
 blue = (0, 0, 255)
@@ -82,19 +86,30 @@ def draw_time_boosts(boosts):
 
 def draw_particles(particles):
     for p in particles:
-            x, y, vx, vy, size, alpha = p
+            x, y, vx, vy, size, alpha, color = p
 
             #Move
             p[0] += vx
             p[1] += vy
 
             # Fade out
-            p[5] -= 10
+            alpha -= 10 
+            alpha = max(0, alpha)
+            p[5] = alpha
 
             #Draw
+
+            color = (
+                int(128 + 127 * math.sin(p[0] * 0.1)),
+                int(128 + 127 * math.sin(p[0] * 0.1 + 2)),
+                int(128 + 127 * math.sin(p[0] * 0.1 + 4))
+            )
             surface = pygame.Surface((size, size), pygame.SRCALPHA)
-            pygame.draw.circle(surface, (0, 255, 100, alpha), (size//2, size//2), size//2)
+            pygame.draw.circle(surface, (*color, alpha), (size//2, size//2), size//2)
             screen.blit(surface, (int(p[0]), int(p[1])))
+            
+
+    
 
 def gameLoop():
     game_over = False
@@ -242,10 +257,13 @@ def gameLoop():
                     random.uniform(-3, 3),
                     random.uniform(-3, 3),
                     random.randint(5, 8),
-                    255
+                    255,
+                    (random.randint(50,255), random.randint(50,255), random.randint(50,255))
                 ])
             
             start_time -= 3000
+            
+
             boost_active = False
             time_boost.append([x1 - 10, y1 - 10, 255])
 
@@ -257,7 +275,8 @@ def gameLoop():
                     random.uniform(-2, 2), # x velocity
                     random.uniform(-2, 2), # y velocity
                     random.randint(4, 7), # size
-                    255 # fade
+                    255, # fade
+                    (random.randint(50,255), random.randint(50,255), random.randint(50,255))
                 ])
             foodx = round(random.randrange(0, width - snake_block) / 10.0) * 10.0
             foody = round(random.randrange(0, height - snake_block) / 10.0) * 10.0
